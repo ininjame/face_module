@@ -1,0 +1,17 @@
+face-env/
+affectnet/
+train_data_ref_2013/
+archive_raf_db/
+.python-version
+__pycache__/
+model_backup/
+
+*.png
+*.jpg
+*.csv
+*.pkl
+*.pth
+*.onnx
+*.mp4
+*.keras
+
