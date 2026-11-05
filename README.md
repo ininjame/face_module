@@ -14,11 +14,11 @@ pip install -r requirements.txt
 
 ### 2. Download model weights
 
-Download the following file and place it in this folder:
+Download the following files and place them in this folder:
 
 | File | Description |
 | --- | --- |
-| `nkf.onnx` | Pretrained NKF model (ONNX) |
+| `nkf.onnx.data` | Pretrained NKF model — weights (sidecar, must be in the same folder as `nkf.onnx`) |
 
 ---
 
