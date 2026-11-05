@@ -44,6 +44,22 @@ python face_tracker_manual.py --model nkf_finetuned.onnx --no-gui --udp 127.0.0.
 # Reduce output rate (emit every Nth frame)
 python face_tracker_manual.py --model nkf_finetuned.onnx --udp 127.0.0.1:5005 --output-every 3
 ```
+**Integration note**: UDP is the current output method. A ROS 2 topic + message interface is planned as a future replacement.
+
+To receive the output, run a UDP listener on the same port. Example below:
+
+```python
+import socket, json
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(("0.0.0.0", 5005))
+
+while True:
+    data, _ = sock.recvfrom(4096)
+    state = json.loads(data.decode())
+    print(state["expression"])
+```
+
 
 **Operator controls (GUI mode):**
 
