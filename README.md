@@ -2,6 +2,10 @@
 
 Real-time facial expression tracker using MediaPipe landmarks + NKF (Neural Keypoint Fusion) expression classifier. Outputs per-frame face state as JSON — over stdout or UDP.
 
+Detailed documentation: [Notion](https://app.notion.com/p/Facial-expression-module-354ab3a8232680d6b865f3903a646e5e?source=copy_link)
+
+Support files: [Drive](https://drive.google.com/drive/folders/15odwPd6iYvTcjMY5yauyeUygpzeto9Zq?usp=drive_link)
+
 ---
 
 ## Setup
@@ -14,7 +18,7 @@ pip install -r requirements.txt
 
 ### 2. Download model weights
 
-Download the following files and place them in this folder:
+Download the following files from the support file folder and place them in this folder:
 
 | File | Description |
 | --- | --- |
