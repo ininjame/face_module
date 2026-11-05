@@ -88,3 +88,7 @@ All thresholds and camera settings are in `config.py`. Key values:
 | `CAM_INDEX` | Camera index (default 0) |
 | `CAM_W` / `CAM_H` / `CAM_FPS` | Camera resolution and frame rate |
 | `FRAME_MIRRORED` | Flip frame horizontally (true for front-facing webcam) |
+
+## License
+
+MIT License — see LICENSE for details.
