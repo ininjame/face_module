@@ -1,0 +1,6 @@
+*.pth
+*.data
+*.zip
+/train
+__pycache__
+*.mp4

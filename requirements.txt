@@ -1,0 +1,9 @@
+torch>=2.1
+torchvision>=0.16
+onnx>=1.15
+onnxruntime>=1.17
+mediapipe==0.10.14   # last line with the legacy mp.solutions.face_mesh API
+opencv-python>=4.8
+numpy<2
+pillow
+tqdm
