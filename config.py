@@ -1,8 +1,21 @@
 """Shared configuration: landmarks, classes, preprocessing, thresholds."""
 
+# ---------------- Model profile ----------------
+# Which trained model this config must match. The two are NOT interchangeable:
+#   "update1" -> nkf_best.pth + nkf_model_update1.onnx
+#                105 landmarks (8 duplicated), RKFA ref = MP 33, fear before disgust
+#   "v2"      -> nkf.onnx (+ its matching .pth, not yet located)
+#                97 landmarks, RKFA ref = MP 2, disgust before fear
+MODEL_PROFILE = "update1"
+assert MODEL_PROFILE in ("update1", "v2"), f"Unknown MODEL_PROFILE: {MODEL_PROFILE}"
+
 # ---------------- Classes (8, incl. contempt) ----------------
-CLASSES = ["neutral", "happy", "angry", "sad", "surprise", "disgust", "fear", "contempt"]
+if MODEL_PROFILE == "update1":
+    CLASSES = ["neutral", "happy", "angry", "sad", "surprise", "fear", "disgust", "contempt"]
+else:
+    CLASSES = ["neutral", "happy", "angry", "sad", "surprise", "disgust", "fear", "contempt"]
 N_CLASSES = len(CLASSES)
+
 
 # ---------------- Landmarks ----------------
 BASE_LANDMARKS = list(range(68))  # "first 68 MediaPipe" (old model)
@@ -15,8 +28,11 @@ EXTRA_LANDMARKS = {
     "forehead":  [10, 9],
 }
 
-# Deduplicate while preserving order; drop anything already in the base set.
-_seen = set(BASE_LANDMARKS)
+# Deduplicate the extra list while preserving order.
+#   update1: deduplicate within the extras only, so 4, 9, 10, 17, 37, 39, 49, 50
+#            appear in both base and extra (105 total) — this is how it was trained.
+#   v2:      also drop anything already in the base set (97 total).
+_seen = set() if MODEL_PROFILE == "update1" else set(BASE_LANDMARKS)
 EXTRA_LANDMARKS_DEDUPED = []
 for _group in EXTRA_LANDMARKS.values():
     for _i in _group:
@@ -29,8 +45,8 @@ N_LANDMARKS = len(ALL_LANDMARK_INDICES)
 
 # RKFA reference landmark (MediaPipe index). The docs say "index 33 = nasal base",
 # but that is the dlib-68 numbering. In MediaPipe, 33 is an eye corner; the
-# subnasale (nasal base) is 2. Set to 33 to reproduce the old behaviour exactly.
-RKFA_REF_MP_INDEX = 2
+# subnasale (nasal base) is 2. update1 was trained with 33, v2 with 2.
+RKFA_REF_MP_INDEX = 33 if MODEL_PROFILE == "update1" else 2
 if RKFA_REF_MP_INDEX not in ALL_LANDMARK_INDICES:
     ALL_LANDMARK_INDICES.append(RKFA_REF_MP_INDEX)
     N_LANDMARKS = len(ALL_LANDMARK_INDICES)
@@ -54,11 +70,12 @@ IMAGENET_MEAN = [0.485, 0.456, 0.406]
 IMAGENET_STD = [0.229, 0.224, 0.225]
 
 # ---------------- Tracker ----------------
-CAM_INDEX = 0
+CAM_INDEX = 4
 CAM_W, CAM_H, CAM_FPS = 640, 480, 30
 FRAME_MIRRORED = True          # frame is flipped horizontally before processing
 CLASSIFY_EVERY_N = 15
-CROP_PADDING = 0.20
+CROP_PADDING = 0.10
+CROP_SQUARE  = True
 MIN_CONFIDENCE = 0.4
 EAR_BLINK_THRESHOLD = 0.25
 MAR_OPEN_THRESHOLD = 0.35

@@ -86,12 +86,17 @@ def geometric_metrics(pts):
 
 
 def get_face_crop(frame, pts):
-    h, w    = frame.shape[:2]
-    x0, y0  = pts.min(0)
-    x1, y1  = pts.max(0)
-    px, py  = (x1 - x0) * C.CROP_PADDING, (y1 - y0) * C.CROP_PADDING
-    x0, y0  = int(max(0, x0 - px)), int(max(0, y0 - py))
-    x1, y1  = int(min(w, x1 + px)), int(min(h, y1 + py))
+    h, w   = frame.shape[:2]
+    x0, y0 = pts.min(0)
+    x1, y1 = pts.max(0)
+    px, py = (x1 - x0) * C.CROP_PADDING, (y1 - y0) * C.CROP_PADDING
+    x0, y0, x1, y1 = x0 - px, y0 - py, x1 + px, y1 + py
+    if getattr(C, "CROP_SQUARE", False):
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        s = max(x1 - x0, y1 - y0) / 2
+        x0, y0, x1, y1 = cx - s, cy - s, cx + s, cy + s
+    x0, y0 = int(max(0, x0)), int(max(0, y0))
+    x1, y1 = int(min(w, x1)), int(min(h, y1))
     if x1 - x0 < 20 or y1 - y0 < 20:
         return None, None
     return frame[y0:y1, x0:x1], (x0, y0, x1, y1)
@@ -252,7 +257,7 @@ def make_video_writer(w, h, fps):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model",        default="nkf.onnx")
+    ap.add_argument("--model",        default="models/nkf_finetuned.onnx")
     ap.add_argument("--udp",          default=None,
                     help="host:port to stream FaceState JSON")
     ap.add_argument("--output-every", type=int, default=1)
@@ -325,6 +330,7 @@ def main():
                               for p in face.landmark], np.float32)
 
             if not a.no_gui:
+                clean = frame.copy()
                 mp_draw.draw_landmarks(frame, face, mp_mesh.FACEMESH_TESSELATION,
                                        None, mp_draw.DrawingSpec((128, 128, 128), 1, 1))
                 mp_draw.draw_landmarks(frame, face, mp_mesh.FACEMESH_CONTOURS,
@@ -335,7 +341,7 @@ def main():
             m = geometric_metrics(pts)
 
             if frame_i % C.CLASSIFY_EVERY_N == 0:
-                crop, box = get_face_crop(frame, pts)
+                crop, box = get_face_crop(clean, pts)
                 if crop is None:
                     print(f"[frame {frame_i}] get_face_crop returned None")
                 else:
