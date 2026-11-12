@@ -61,6 +61,8 @@ Download the following files from this Drive link: [Drive](https://drive.google.
 | --- | --- |
 | `nkf_finetuned.onnx` | Base model fine-tuned on the author's face. Works for other people too, but best for the author. |
 | `nkf_finetuned.onnx.data` | Data for fine-tuned base model. |
+| `nkf_finetuned_sq.onnx` | A more square crop of the fine-tuned model. May work better (please test yourself.) |
+| `nkf_finetuned_sq.onnx.data` | Data for fine-tuned square cropped model. |
 | `nkf_best.pth` | Base NKF model trained on AffectNet (PyTorch weights). Starting point for fine-tuning. |
 
 If an `.onnx` file comes with a `.onnx.data` file of the same name, keep both in `models/`. The `.data` file holds the weights.
@@ -84,7 +86,7 @@ Use the **first** `/dev/videoN` listed under your camera. Laptop cameras often t
 ## Run the face tracker
 
 ```bash
-# Fine-tuned model (--model optional, as tracker uses finetuned model by default)
+# Base Fine-tuned model (--model optional, as tracker uses finetuned model by default)
 python face_tracker_manual.py --model models/nkf_finetuned.onnx
 
 # Stream FaceState JSON over UDP
